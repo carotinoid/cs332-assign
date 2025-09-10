@@ -77,7 +77,7 @@ class FunSetSuite extends FunSuite {
     val s1 = singletonSet(1)
     val s2 = singletonSet(2)
     val s3 = singletonSet(3)
-    def isOdd(x: Int): Boolean = (x % 2 == 1)
+    def isOdd(x: Int): Boolean = (x % 2 == 1) || (x % 2 == -1)
     def isEven(x: Int): Boolean = (x % 2 == 0)
     def isDividedBy(n: Int)(x: Int): Boolean = (x % n == 0)
   }
@@ -123,6 +123,16 @@ class FunSetSuite extends FunSuite {
       assert(contains(s123, 3), "Union 3")
       assert(!contains(s123, 4), "Union 4")
     }
+
+    new TestSets {
+      val setEven = (x: Int) => (x % 2 == 0)
+      val setOdd = (x: Int) => (x % 2 == 1 || x % 2 == -1)
+      val setInteger = union(setEven, setOdd)
+      assert(contains(setInteger, -999), "Union 5")
+      assert(contains(setInteger, -2), "Union 6")
+      assert(contains(setInteger, 0), "Union 7")
+      assert(contains(setInteger, 284), "Union 8")
+    }
   }
 
   test("intersect") {
@@ -144,16 +154,37 @@ class FunSetSuite extends FunSuite {
   test("diff") {
     new TestSets {
       val sd = diff(s1, s2)
-      assert(contains(sd, 1), "Diff 1")
-      assert(!contains(sd, 2), "Diff 2")
+      assert(contains(sd, 1), "Diff 1-1")
+      assert(!contains(sd, 2), "Diff 1-2")
     }
     new TestSets {
       val s12 = union(s1, s2)
       val s23 = union(s2, s3)
       val s1d = diff(s12, s23)
-      assert(contains(s1d, 1), "Diff 1")
-      assert(!contains(s1d, 2), "Diff 2")
-      assert(!contains(s1d, 3), "Diff 3")
+      assert(contains(s1d, 1), "Diff 2-1")
+      assert(!contains(s1d, 2), "Diff 2-2")
+      assert(!contains(s1d, 3), "Diff 2-3")
+    }
+    new TestSets {
+      val setEven = (x: Int) => (x % 2 == 0)
+      val setDivBy4 = (x: Int) => (x % 4 == 0)
+      val ss = diff(setEven, setDivBy4)
+      assert(contains(ss, 2), "Diff 3-1")
+      assert(contains(ss, 6), "Diff 3-2")
+      assert(!contains(ss, 4), "Diff 3-3")
+      assert(!contains(ss, 8), "Diff 3-4")
+      assert(!contains(ss, 0), "Diff 3-5")
+    }
+    new TestSets {
+      val sd = diff(s1, s2)
+      assert(contains(sd, 1), "Diff 4-1")
+      assert(!contains(sd, 2), "Diff 4-2")
+    }
+    new TestSets {
+      val s12 = union(s1, s2)
+      val sd = diff(s12, s2)
+      assert(contains(sd, 1), "Diff 5-1")
+      assert(!contains(sd, 2), "Diff 5-2")
     }
   }
 
@@ -182,14 +213,20 @@ class FunSetSuite extends FunSuite {
       assert(forall(setEven, isEven), "Forall 3")
       assert(!forall(union(setEven, s1), isEven), "Forall 4")
     }
+
   }
 
   test("exists") {
     new TestSets {
-      val setOdd = (x: Int) => (x % 2 == 1)
+      val setOdd = (x: Int) => (x % 2 == 1) || (x % 2 == -1)
       assert(!exists(setOdd, isEven), "Exists 1")
       assert(!exists(union(setOdd, s1), isEven), "Exists 2")
       assert(exists(union(setOdd, s2), isEven), "Exists 3")
+    }
+    new TestSets {
+      val s12 = union(s1, s2);
+      assert(exists(s12, isEven), "Exists 4")
+      assert(exists(s12, isOdd), "Exists 5")
     }
   }
 
