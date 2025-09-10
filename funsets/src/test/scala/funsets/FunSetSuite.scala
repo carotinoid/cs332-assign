@@ -77,6 +77,9 @@ class FunSetSuite extends FunSuite {
     val s1 = singletonSet(1)
     val s2 = singletonSet(2)
     val s3 = singletonSet(3)
+    def isOdd(x: Int): Boolean = (x % 2 == 1)
+    def isEven(x: Int): Boolean = (x % 2 == 0)
+    def isDividedBy(n: Int)(x: Int): Boolean = (x % n == 0)
   }
 
   /**
@@ -98,6 +101,7 @@ class FunSetSuite extends FunSuite {
        * the test fails. This helps identifying which assertion failed.
        */
       assert(contains(s1, 1), "Singleton")
+      assert(!contains(s1, 2), "Singleton")
     }
   }
 
@@ -107,6 +111,109 @@ class FunSetSuite extends FunSuite {
       assert(contains(s, 1), "Union 1")
       assert(contains(s, 2), "Union 2")
       assert(!contains(s, 3), "Union 3")
+    }
+
+    new TestSets {
+      val s12 = union(s1, s2)
+      val s23 = union(s2, s3)
+      val s123 = union(s12, s23)
+
+      assert(contains(s123, 1), "Union 1")
+      assert(contains(s123, 2), "Union 2")
+      assert(contains(s123, 3), "Union 3")
+      assert(!contains(s123, 4), "Union 4")
+    }
+  }
+
+  test("intersect") {
+    new TestSets {
+      val sx = intersect(s1, s2)
+      assert(!contains(sx, 1), "Intersect 1")
+      assert(!contains(sx, 2), "Intersect 2")
+    }
+    new TestSets {
+      val s12 = union(s1, s2)
+      val s23 = union(s2, s3)
+      val s2x = intersect(s12, s23)
+      assert(!contains(s2x, 1), "Intersect 1")
+      assert(contains(s2x, 2), "Intersect 2")
+      assert(!contains(s2x, 3), "Intersect 3")
+    }
+  }
+
+  test("diff") {
+    new TestSets {
+      val sd = diff(s1, s2)
+      assert(contains(sd, 1), "Diff 1")
+      assert(!contains(sd, 2), "Diff 2")
+    }
+    new TestSets {
+      val s12 = union(s1, s2)
+      val s23 = union(s2, s3)
+      val s1d = diff(s12, s23)
+      assert(contains(s1d, 1), "Diff 1")
+      assert(!contains(s1d, 2), "Diff 2")
+      assert(!contains(s1d, 3), "Diff 3")
+    }
+  }
+
+  test("filter") {
+    new TestSets {
+      val s123 = union(union(s1, s2), s3)
+      val odd = filter(s123, isOdd)
+      val even = filter(s123, isEven)
+      assert(contains(odd, 1), "Odd 1")
+      assert(!contains(odd, 2), "Odd 2")
+      assert(contains(odd, 3), "Odd 3")
+      assert(!contains(even, 1), "Even 1")
+      assert(contains(even, 2), "Even 2")
+      assert(!contains(even, 3), "Even 3")
+    }
+  }
+
+  test("forall") {
+    new TestSets {
+      val s13 = union(s1, s3)
+      assert(forall(s13, isOdd), "Forall 1")
+      assert(!forall(union(s13, s2), isOdd), "Forall 2")
+    }
+    new TestSets {
+      val setEven = (x: Int) => (x % 2 == 0)
+      assert(forall(setEven, isEven), "Forall 3")
+      assert(!forall(union(setEven, s1), isEven), "Forall 4")
+    }
+  }
+
+  test("exists") {
+    new TestSets {
+      val setOdd = (x: Int) => (x % 2 == 1)
+      assert(!exists(setOdd, isEven), "Exists 1")
+      assert(!exists(union(setOdd, s1), isEven), "Exists 2")
+      assert(exists(union(setOdd, s2), isEven), "Exists 3")
+    }
+  }
+
+  test("map") {
+    new TestSets {
+      val setEven = (x: Int) => (x % 2 == 0)
+      val setDoubledEven = map(setEven, (x: Int) => (x * 2))
+      assert(forall(setEven, isEven), "Map 1")
+      assert(forall(setDoubledEven, isDividedBy(4)_), "Map 2")
+      assert(!exists(setDoubledEven, isOdd), "Map 3")
+      assert(exists(setDoubledEven, isEven), "Map 4")
+    }
+    new TestSets {
+      val setNatural = (x: Int) => (x > 0)
+      val setInteger = (x: Int) => true
+      val setDoubledNatural = map(setNatural, (x: Int) => (x * 2))
+      val setDoubledInteger = map(setInteger, (x: Int) => (x * 2))
+      assert(forall(setDoubledNatural, isEven), "Map 5")
+      assert(forall(setDoubledInteger, isEven), "Map 6")
+      assert(!exists(setDoubledInteger, isOdd), "Map 7")
+      assert(forall(setDoubledNatural, (x: Int) => (x > 0)), "Map 8")
+      val setDoubledIntegerPlusOne = map(setDoubledInteger, (x: Int) => (x + 1))
+      assert(!forall(setDoubledIntegerPlusOne, isEven), "Map 9")
+      assert(exists(setDoubledIntegerPlusOne, isOdd), "Map 10")
     }
   }
 }
