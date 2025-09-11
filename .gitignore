@@ -16,3 +16,5 @@ lib_managed/
 
 .vscode/
 .metals/
+.venv
+collecting_output/
