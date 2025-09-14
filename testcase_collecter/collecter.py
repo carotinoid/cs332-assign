@@ -79,6 +79,9 @@ def modify_test_file(temp_filepath: str, github_id: str):
     with open(temp_filepath, 'r', encoding='utf-8') as f:
         content = f.read()
 
+    pattern = r'\bignore\b\s*\(.*?\)\s*\{[\s\S]*?\}'
+    content = regex.sub(pattern, '', content)
+
     # Create unique names based on github_id
     new_trait_name = f"TestSets_{github_id}"
     
