@@ -1664,12 +1664,11 @@ class OtherFunSetSuite extends FunSuite {
     }
   }
 
-// This testcase might be wrong.
-//   test("test for forall -ver.2 -- by chj0530") {
-//     new TestSets_chj0530 {
-//       assert(!forall(s6, (x: Int) => 4 % x == 0), "forall 2")
-//     }
-//   }
+  test("test for forall -ver.2 -- by chj0530") {
+    new TestSets_chj0530 {
+      assert(!forall(s6, (x: Int) => 4 % x == 0), "forall 2")
+    }
+  }
 
   test("test for exists -ver.1 -- by chj0530") {
     new TestSets_chj0530 {
