@@ -163,7 +163,10 @@ object Huffman {
     @tailrec
     def decoder(position: CodeTree, bits: List[Bit], acc: List[Char]): List[Char] = {
       position match {
-        case Leaf(char, _) => decoder(tree, bits, char :: acc)
+        case Leaf(char, _) => {
+          if(bits.isEmpty) (char :: acc).reverse
+          else decoder(tree, bits, char :: acc)
+        }
         case Fork(left, right, _, _) => {
           bits match {
             case Nil => acc.reverse
