@@ -77,16 +77,8 @@ object Huffman {
    *       println("integer is  : "+ theInt)
    *   }
    */
-  def times(chars: List[Char]): List[(Char, Int)] = {
-    @tailrec
-    def count(chars: List[Char], acc: List[(Char, Int)]): List[(Char, Int)] = chars match {
-      case Nil => acc
-      case head :: tail =>
-        val (target, other) = acc.partition(_._1 == head)
-        count(tail, (head, target.map(_._2).sum + 1) :: other)
-    }
-    count(chars, Nil)
-  }
+  def times(chars: List[Char]): List[(Char, Int)] = chars.groupBy(identity).mapValues(_.size).toList
+
 
   /**
    * Returns a list of `Leaf` nodes for a given frequency table `freqs`.
@@ -96,13 +88,7 @@ object Huffman {
    * of a leaf is the frequency of the character.
    */
   def makeOrderedLeafList(freqs: List[(Char, Int)]): List[Leaf] = {
-    @tailrec
-    val sorted = freqs.sortBy(- _._2)
-    def builder(freqs: List[(Char, Int)], acc: List[Leaf]): List[Leaf] = freqs match {
-      case Nil => acc
-      case (char, weight) :: tail => builder(tail, Leaf(char, weight) :: acc)
-    }
-    builder(sorted, Nil)
+    freqs.sortBy(_._2).map(pair => Leaf(pair._1, pair._2))
   }
 
   /**
@@ -123,12 +109,12 @@ object Huffman {
    * unchanged.
    */
   def combine(trees: List[CodeTree]): List[CodeTree] = trees match {
-    case Nil => Nil
-    case one :: Nil => trees
     case one :: two :: tail => {
-      val fork = Fork(one, two, chars(one) ::: chars(two), weight(one) + weight(two))
-      (fork :: tail).sortBy(weight(_))
+      val fork = makeCodeTree(one, two)
+      val (first, second) = tail.span(weight(_) < weight(fork))
+      first ::: fork :: second
     }
+    case _ => trees
   }
 
   /**
@@ -177,10 +163,10 @@ object Huffman {
     @tailrec
     def decoder(position: CodeTree, bits: List[Bit], acc: List[Char]): List[Char] = {
       position match {
-        case Leaf(char, _) => decoder(tree, bits, acc :+ char)
+        case Leaf(char, _) => decoder(tree, bits, char :: acc)
         case Fork(left, right, _, _) => {
           bits match {
-            case Nil => acc
+            case Nil => acc.reverse
             case bit :: tail => {
               if (bit == 0) decoder(left, tail, acc)
               else decoder(right, tail, acc)

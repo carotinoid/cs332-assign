@@ -32,9 +32,12 @@ class HuffmanSuite extends FunSuite {
 
   test("times") {
     val aba = "aba".toList
-    assert(times(aba) === List(('a', 2), ('b', 1))
-          || times(aba) === List(('b', 1), ('a', 2)))
+    assert(times(aba).toSet === Set(('a', 2), ('b', 1)))
     assert(times("aaaaa".toList) === List(('a', 5)))
+  }
+
+  test("times with empty list") {
+    assert(times(List()) === List())
   }
 
   test("makeOrderedLeafList for some frequency table") {
@@ -50,6 +53,12 @@ class HuffmanSuite extends FunSuite {
     new TestTrees {
       assert(decode(t1, encode(t1)("ab".toList)) === "ab".toList)
     }
+  }
+
+  test("createCodeTree with a single character text") {
+    val tree = createCodeTree("a".toList)
+    assert(tree === Leaf('a', 1))
+    assert(decode(tree, encode(tree)("a".toList)) === "a".toList)
   }
 
   test("decode and encode a very long text should be identity - 1") {
@@ -101,7 +110,7 @@ class HuffmanSuite extends FunSuite {
   test("convert a small CodeTree") {
     new TestTrees {
       val ct: CodeTable = convert(t2)
-      assert(ct.sortBy(_._1) == List(('a', List(0, 0)), ('b', List(0, 1)), ('d', List(1))))
+      assert(ct.toSet === Set(('a', List(0, 0)), ('b', List(0, 1)), ('d', List(1))))
     }
   }
 
