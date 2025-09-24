@@ -61,6 +61,12 @@ class HuffmanSuite extends FunSuite {
     assert(decode(tree, encode(tree)("a".toList)) === "a".toList)
   }
 
+  test("createCodeTree with a single type of character text") {
+    val tree = createCodeTree("aaaaaa".toList)
+    assert(tree === Leaf('a', 6))
+    assert(decode(tree, encode(tree)("aaaaaa".toList)) === "aaaaaa".toList)
+  }
+
   test("decode and encode a very long text should be identity - 1") {
     new TestTrees {
       val text = "abhguijhuosajfljkasdh flahs fiulqhwuefashd flashdlajkshdflkqjwh nldfkjas dfkljashklf j shadlkfj halskd fjhqikewfhlaakjshdflasudfy9oq4984yh43hbkqbhkajhualuifhluihlfaskjhdfiqlwuthilqk3hksafhas,jkdfnsjkadvhklzsjhflkjhwe,kthq3l4iuthlo3q48ythoqfyhelaskjhjafskajdfnak,jhfakufh24938yo934ui8qyhtwhrkfnas,jkdfbb"
