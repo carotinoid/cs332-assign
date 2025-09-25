@@ -19,3 +19,5 @@ python3 collecter.py objsets TweetSet
 
 #   def size(set: TweetSet): Int = asSet(set).size
 # ```
+
+python3 collecter.py patmat Huffman

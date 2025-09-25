@@ -83,16 +83,20 @@ def modify_test_file(temp_filepath: str, github_id: str):
     content = re.sub(pattern, '', content)
 
     # Create unique names based on github_id
-    new_trait_name = f"TestSets_{github_id}"
+    new_trait_name = f"TestTrait_{github_id}"
     
     # Use regular expressions with word boundaries (\b) to avoid replacing parts of other words
     # This makes the replacement safer.
     # Pattern to find 'trait TestSets'
-    content = re.sub(r'\b(trait\s+TestSets)\b', f'trait {new_trait_name}', content)
+    content = re.sub(r'\b(trait\s+TestTrees)\b', f'trait {new_trait_name}', content)
     # Pattern to find 'new TestSets'
-    content = re.sub(r'\b(new\s+TestSets)\b', f'new {new_trait_name}', content)
+    content = re.sub(r'\b(new\s+TestTrees)\b', f'new {new_trait_name}', content)
     # test("...") --> test("...-github_id")
-    content = re.sub(r'test\(\"(.*?)\"\)', r'test("\1 -- by ' + github_id + '")', content)
+    # bug: test(".. \" .. \" .. ") --> test(".. \" .. \ -- by id ")")
+    # content = re.sub(r'test\(\"(.*?)\"\)', r'test("\1 -- by ' + github_id + '")', content)
+    # Corrected regex
+    content = re.sub(r'test\(\"((?:\\.|[^"])*)\"\)', r'test("\1 -- by ' + github_id + '")', content)
+
 
     with open(temp_filepath, 'w', encoding='utf-8') as f:
         f.write(content)
