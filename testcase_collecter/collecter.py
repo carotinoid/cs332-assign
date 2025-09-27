@@ -95,8 +95,8 @@ def modify_test_file(temp_filepath: str, github_id: str):
     # bug: test(".. \" .. \" .. ") --> test(".. \" .. \ -- by id ")")
     # content = re.sub(r'test\(\"(.*?)\"\)', r'test("\1 -- by ' + github_id + '")', content)
     # Corrected regex
-    content = re.sub(r'test\(\"((?:\\.|[^"])*)\"\)', r'test("\1 -- by ' + github_id + '")', content)
-
+    # content = re.sub(r'test\(\"((?:\\.|[^"])*)\"\)', r'test("\1 -- by ' + github_id + '")', content)
+    content = re.sub(r'test\(\"((?:\\.|[^"])*)\"\)', r'test("[' + github_id + r'] \1")', content)
 
     with open(temp_filepath, 'w', encoding='utf-8') as f:
         f.write(content)
@@ -134,7 +134,11 @@ def merge_files(temp_files: List[str], final_filename: str):
 
     header = header_match.group(1)
     footer = "\n}\n"
-    
+
+    import os
+    timestamp = os.popen("date").read().strip()
+    header = f"/** \n * {timestamp} \n */\n" + header
+
     all_bodies = []
     for temp_file in temp_files:
         with open(temp_file, 'r', encoding='utf-8') as f:
