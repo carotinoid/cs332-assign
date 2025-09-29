@@ -77,12 +77,22 @@ class HuffmanSuite extends FunSuite {
     }
   }
 
-    test("decode and encode a very long text should be identity - 2") {
+  test("decode and encode a very long text should be identity - 2") {
     new TestTrees {
       val text = "ghfgjfkfgdsrfgjftjkftdgkljk;l;'iiftuffht cdxdf gmnihuybgvtfrceg6bhnyj8u9iu yt 0i9u8y6590"
       val t = createCodeTree(text.toList)
       // Length are measured from here: https://huffman-coding-online.vercel.app/
       assert(encode(t)(text.toList).size === 398)
+      assert(decode(t, encode(t)(text.toList)) === text.toList)
+    }
+  }
+
+  test("decode and encode a very long text should be identity - 3") {
+    new TestTrees {
+      val text = "aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaapaaaqaaaraaasaaataaauaaavaaawaaaxaaayaaazaaabbaabbaacbaadbaaebaafbaagbaahbaaibaajbaakbaalbaambaambaaobaapbaaqbaarbaasbaatbaaubaaavbaawbaaxbaaybaazbababacbadbaebafbagbahbaibajbakbalbambanbaobapbaqbarsbatbaubavbawbaxbaybazcaacabaacacadaeafagahaiajacakkacalamanacaocapaqcarcascataucavacwacaxacayazcabcaccacdcaecacfcagcahcaicajcakcalcamcancaocapcaqcarcascatcaucavcawcaxcaycazcbacbccbdcbecbfcbccdc"
+      val t = createCodeTree(text.toList)
+      // Length are measured from here: https://huffman-coding-online.vercel.app/
+      assert(encode(t)(text.toList).size === 1355)
       assert(decode(t, encode(t)(text.toList)) === text.toList)
     }
   }
@@ -109,6 +119,16 @@ class HuffmanSuite extends FunSuite {
       val t = createCodeTree(text.toList)
       // Length are measured from here: https://huffman-coding-online.vercel.app/
       assert(quickEncode(t)(text.toList).size === 398)
+      assert(decode(t, quickEncode(t)(text.toList)) === text.toList)
+    }
+  }
+
+  test("decode and quickEncode a very long text should be identity - 3") {
+    new TestTrees {
+      val text = "aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaapaaaqaaaraaasaaataaauaaavaaawaaaxaaayaaazaaabbaabbaacbaadbaaebaafbaagbaahbaaibaajbaakbaalbaambaambaaobaapbaaqbaarbaasbaatbaaubaaavbaawbaaxbaaybaazbababacbadbaebafbagbahbaibajbakbalbambanbaobapbaqbarsbatbaubavbawbaxbaybazcaacabaacacadaeafagahaiajacakkacalamanacaocapaqcarcascataucavacwacaxacayazcabcaccacdcaecacfcagcahcaicajcakcalcamcancaocapcaqcarcascatcaucavcawcaxcaycazcbacbccbdcbecbfcbccdc"
+      val t = createCodeTree(text.toList)
+      // Length are measured from here: https://huffman-coding-online.vercel.app/
+      assert(quickEncode(t)(text.toList).size === 1355)
       assert(decode(t, quickEncode(t)(text.toList)) === text.toList)
     }
   }
