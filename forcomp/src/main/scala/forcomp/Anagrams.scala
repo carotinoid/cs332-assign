@@ -178,10 +178,27 @@ object Anagrams {
       else {
         for {
           comb <- combinations(occurences)
-          front <- dictionaryByOccurrences.get(comb).toList.flatten
+          front <- dictionaryByOccurrences.getOrElse(comb, Nil)
           back <- remainsAnagrams(subtract(occurences, comb))
         } yield front :: back
       }
+    }
+    remainsAnagrams(sentenceOccurrences(sentence))
+  }
+
+import scala.collection.mutable
+  val memo: mutable.Map[Occurrences, List[Sentence]] = mutable.Map()
+  def sentenceAnagramsMemo(sentence: Sentence): List[Sentence] = {
+    def remainsAnagrams(occurences: Occurrences): List[Sentence] = {
+      memo.getOrElseUpdate(occurences, {
+        if(occurences.isEmpty) List(Nil)
+        else
+          for {
+            comb <- combinations(occurences)
+            front <- dictionaryByOccurrences.getOrElse(comb,Nil)
+            back <- remainsAnagrams(subtract(occurences, comb))
+          } yield front :: back
+      })
     }
     remainsAnagrams(sentenceOccurrences(sentence))
   }

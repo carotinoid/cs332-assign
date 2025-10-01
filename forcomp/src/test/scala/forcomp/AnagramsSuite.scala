@@ -138,4 +138,63 @@ class AnagramsSuite extends FunSuite {
     assert(sentenceAnagrams(sentence).toSet === anas.toSet)
   }
 
+  test("memoized sentence anagrams: []") {
+    val sentence = List()
+    assert(sentenceAnagramsMemo(sentence) === List(Nil))
+  }
+
+  test("memoized sentence anagrams: Linux rulez") {
+    val sentence = List("Linux", "rulez")
+    val anas = List(
+      List("Rex", "Lin", "Zulu"),
+      List("nil", "Zulu", "Rex"),
+      List("Rex", "nil", "Zulu"),
+      List("Zulu", "Rex", "Lin"),
+      List("null", "Uzi", "Rex"),
+      List("Rex", "Zulu", "Lin"),
+      List("Uzi", "null", "Rex"),
+      List("Rex", "null", "Uzi"),
+      List("null", "Rex", "Uzi"),
+      List("Lin", "Rex", "Zulu"),
+      List("nil", "Rex", "Zulu"),
+      List("Rex", "Uzi", "null"),
+      List("Rex", "Zulu", "nil"),
+      List("Zulu", "Rex", "nil"),
+      List("Zulu", "Lin", "Rex"),
+      List("Lin", "Zulu", "Rex"),
+      List("Uzi", "Rex", "null"),
+      List("Zulu", "nil", "Rex"),
+      List("rulez", "Linux"),
+      List("Linux", "rulez")
+    )
+    assert(sentenceAnagramsMemo(sentence).toSet === anas.toSet)
+  }  
+
+  test("memoized sentence anagrams: Yes man") {
+    val sentence = List("Yes", "man")
+    val anas = List(
+      List("en", "as", "my"),
+      List("en", "my", "as"),
+      List("man", "yes"),
+      List("men", "say"),
+      List("as", "en", "my"),
+      List("as", "my", "en"),
+      List("sane", "my"),
+      List("Sean", "my"),
+      List("my", "en", "as"),
+      List("my", "as", "en"),
+      List("my", "sane"),
+      List("my", "Sean"),
+      List("say", "men"),
+      List("yes", "man")
+    )
+    assert(sentenceAnagramsMemo(sentence).toSet === anas.toSet)
+  }
+
+  // If sentenceAnagramsMemo function is not enough fast, it will hang on.
+  ignore("memoized sentence anagrams: Hello Mr My Yesterday") {
+    val sentence = List("Hello", "Mr", "My", "Yesterday")
+    println(sentenceAnagramsMemo(sentence))
+  }
+
 }
