@@ -191,10 +191,79 @@ class AnagramsSuite extends FunSuite {
     assert(sentenceAnagramsMemo(sentence).toSet === anas.toSet)
   }
 
-  // If sentenceAnagramsMemo function is not enough fast, it will hang on.
-  ignore("memoized sentence anagrams: Hello Mr My Yesterday") {
-    val sentence = List("Hello", "Mr", "My", "Yesterday")
-    println(sentenceAnagramsMemo(sentence))
+  // 두 함수의 성능을 비교하기 위한 테스트
+  test("sentenceAnagrams performance comparison with and without memoization") {
+    val sentence = List("I", "love", "Scala")
+
+    println("\nSentence: \"I love Scala\"")
+
+    // Case 1
+    val startTime1 = System.nanoTime()
+    val result1 = sentenceAnagrams(sentence)
+    val duration1 = (System.nanoTime() - startTime1) / 1e6d
+
+    println(f"Baseline (sentenceAnagrams)\t\t:$duration1%.2f ms")
+
+    // Case 2-1
+    memo.clear()
+    val startTime2 = System.nanoTime()
+    val result2 = sentenceAnagramsMemo(sentence)
+    val duration2 = (System.nanoTime() - startTime2) / 1e6d
+
+    println(f"Memoized (first run, cold cache)\t:$duration2%.2f ms")
+
+    // Case 2-2
+    val startTime3 = System.nanoTime()
+    val result3 = sentenceAnagramsMemo(sentence)
+    val duration3 = (System.nanoTime() - startTime3) / 1e6d
+    
+    println(f"Memoized (second run, warm cache)\t:$duration3%.2f ms")
+
+    assert(result1.toSet == result2.toSet, "The results of both functions should be the same")
+    assert(result2.toSet == result3.toSet, "The results of memoized function should be consistent")
+    assert(duration3 < duration1, "Cached run should be faster than the baseline")
+    assert(duration3 < duration2, "Cached run should be faster than the first memoized run")
+
+
+    println("\nUsing cache of \"I love scala\", calculate \"Hello World\"")
+
+    val sentence2 = List("Hello", "World")
+
+    val startTime4 = System.nanoTime()
+    val result4 = sentenceAnagrams(sentence2)
+    val duration4 = (System.nanoTime() - startTime4) / 1e6d
+
+    println(f"Baseline (sentenceAnagrams)\t\t:$duration4%.2f ms")
+
+    val startTime5 = System.nanoTime()
+    val result5 = sentenceAnagramsMemo(sentence2)
+    val duration5 = (System.nanoTime() - startTime5) / 1e6d
+
+    println(f"Memoized (sentenceAnagramsMemo)\t\t:$duration5%.2f ms")
+
+    assert(result4.toSet == result5.toSet, "The results of both functions should be the same")
+    assert(duration5 < duration4, "Memoized run should be faster than the baseline")
+
+    println("\nUsing caches, calculate \"Today is a good day\"")
+
+    val sentence3 = List("Today", "is", "a", "good", "day")
+
+    val startTime6 = System.nanoTime()
+    val result6 = sentenceAnagrams(sentence3)
+    val duration6 = (System.nanoTime() - startTime6) / 1e6d
+
+    println(f"Baseline (sentenceAnagrams)\t\t:$duration6%.2f ms")
+
+    val startTime7 = System.nanoTime()
+    val result7 = sentenceAnagramsMemo(sentence3)
+    val duration7 = (System.nanoTime() - startTime7) / 1e6d
+
+    println(f"Memoized (sentenceAnagramsMemo)\t\t:$duration7%.2f ms")
+
+    assert(result6.toSet == result7.toSet, "The results of both functions should be the same")
+    assert(duration7 < duration6, "Memoized run should be faster than the baseline")
+
+    println("\nThe memoized version is significantly faster on the second run.")
   }
 
 }
