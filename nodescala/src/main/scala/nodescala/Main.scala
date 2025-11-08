@@ -8,7 +8,7 @@ import scala.async.Async.{async, await}
 
 object Main {
 
-  def main(args: Array[String]) {
+  def main(args: Array[String]): Unit = {
     // 1. instantiate the server at 8191, relative path "/test",
     //    and have the response return headers of the request
     val myServer = new NodeScala.Default(8191)
@@ -25,17 +25,26 @@ object Main {
     // TO IMPLEMENT
     // 3. create a future that completes after 20 seconds
     //    and continues with a `"Server timeout!"` message
-    val timeOut: Future[String] = ???
+    val timeOut: Future[String] = Future {
+      Thread.sleep(20000)
+      "Server timeout!"
+    }
 
     // TO IMPLEMENT
     // 4. create a future that completes when either 20 seconds elapse
     //    or the user enters some text and presses ENTER
-    val terminationRequested: Future[String] = ???
+    val terminationRequested: Future[String] = {
+      Future.any(List(userInterrupted, timeOut))
+    }
 
     // TO IMPLEMENT
     // 5. unsubscribe from the server
     terminationRequested onSuccess {
-      case msg => ???
+      case msg => {
+        println(msg)
+        myServerSubscription.unsubscribe()
+        println("Bye!")
+      }
     }
   }
 
